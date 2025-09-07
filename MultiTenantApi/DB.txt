@@ -1,0 +1,38 @@
+-- 1) Master DB and Tenants table
+CREATE DATABASE MasterTenantDb;
+GO
+USE MasterTenantDb;
+CREATE TABLE Tenants (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(100) NOT NULL,
+    DomainName NVARCHAR(200) NOT NULL UNIQUE,
+    ConnectionString NVARCHAR(MAX) NOT NULL,
+    IsActive BIT NOT NULL DEFAULT 1
+);
+-- Example inserts. Use the exact connection strings for your environment.
+INSERT INTO Tenants (Name, DomainName, ConnectionString)
+VALUES 
+('Tenant One', 'tenant1.local', 'Server=.;Database=Tenant_Db1;Integrated Security=True;TrustServerCertificate=True;Encrypt=False;'),
+('Tenant Two', 'tenant2.local', 'Server=.;Database=Tenant_Db2;Integrated Security=True;TrustServerCertificate=True;Encrypt=False;');
+
+-- 2) Create Tenant DB1 and seed a simple table
+CREATE DATABASE Tenant_Db1;
+GO
+USE Tenant_Db1;
+CREATE TABLE Products (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(200),
+    Price DECIMAL(18,2)
+);
+INSERT INTO Products (Name, Price) VALUES ('Product A - T1', 9.99), ('Product B - T1', 19.99);
+
+-- 3) Create Tenant DB2 and seed
+CREATE DATABASE Tenant_Db2;
+GO
+USE Tenant_Db2;
+CREATE TABLE Products (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    Name NVARCHAR(200),
+    Price DECIMAL(18,2)
+);
+INSERT INTO Products (Name, Price) VALUES ('Product X - T2', 29.99), ('Product Y - T2', 39.99);
